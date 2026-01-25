@@ -1,0 +1,70 @@
+Project: Mini FlightRadar (Open-source stack)
+Goal:
+Build a working FlightRadar-style web app that shows moving aircraft on a map using OpenSky Network data. Use a C# ASP.NET Core backend to fetch and cache OpenSky data and a single-page frontend (Leaflet + OpenStreetMap) to display plane icons. No photos. The site should be free-to-run using free map tiles. Provide production-friendly files (Dockerfile, README, GitHub Actions CI) and basic tests.
+
+Requirements & constraints:
+- Tech: ASP.NET Core Web API (C#), In-memory caching (IMemoryCache), HttpClient, Leaflet.js, OpenStreetMap tiles. Use .NET 7/8 compatible code.
+- Data source: OpenSky REST endpoint: https://opensky-network.org/api/states/all
+- Respect API limits: implement server-side caching with default TTL 10 seconds (configurable via env var).
+- No images or copyrighted assets. Plane icons must be SVG markers; photos must not be used.
+- Frontend polls backend `/api/flights` every 10s by default; animate markers smoothly using interpolation between updates.
+- Minimal, clean UI, responsive, mobile-friendly.
+- Provide optional SignalR push implementation (toggleable) to move from polling to push.
+- Provide Dockerfile and simple GitHub Actions workflow to build and test.
+
+Deliverables (files to generate):
+1. Backend project `FlightRadarBackend/`:
+   - Program.cs (minimal host + CORS + static files)
+   - Services/OpenSkyService.cs (HttpClient + IMemoryCache + error handling + configurable cache TTL and base URL via env)
+   - Controllers/FlightsController.cs -> GET /api/flights returns cached JSON from OpenSky (application/json)
+   - Models/OpenSkyStateModel.cs (if needed to deserialize; but can return raw JSON)
+   - Optional Hubs/FlightHub.cs (SignalR Hub) and service to broadcast updates
+   - appsettings.json + README with env variables and example settings
+   - Dockerfile that builds the app and serves static frontend (wwwroot)
+
+2. Frontend `frontend/index.html` (or serve from wwwroot):
+   - Leaflet map with OSM tiles (tile url: https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png)
+   - Polls `/api/flights` every POLL_MS env-configurable (default 10000 ms)
+   - Shows only states within current map bounds (optional: toggle)
+   - Creates/updates markers keyed by icao24; markers are SVG rotated by heading
+   - Interpolates movement smoothly between updates (use requestAnimationFrame)
+   - Popup shows: callsign (or icao24), altitude (meters), velocity (m/s or convert to km/h), heading, last seen time
+   - Search box: search by callsign (case-insensitive) and zoom to flight if present
+
+3. Devops / testing:
+   - Dockerfile to containerize backend + static site
+   - .github/workflows/ci.yml to build and run unit tests
+   - README.md with run instructions, env vars, and acceptance tests (curl, examples)
+   - Basic unit test (xUnit) for OpenSkyService: ensures cached string is returned and fetch is attempted when expired (use HttpMessageHandler mocking)
+
+Runtime configuration (env vars):
+- OPENSKY_BASE_URL (default: https://opensky-network.org/api/states/all)
+- CACHE_TTL_SECONDS (default: 10)
+- POLL_MS (frontend default 10000 but also documented)
+- ASPNETCORE_URLS (optional)
+- ENABLE_SIGNALR (true/false)
+
+Acceptance criteria (automated or manual):
+- When backend runs, GET /api/flights returns valid OpenSky JSON (or cached copy) and respects Cache TTL.
+- Frontend loads, shows map, and after first poll populates plane markers within bounds.
+- On repeated polls, markers move smoothly (interpolation) and popups show accurate fields.
+- Search by callsign zooms to marker.
+- Docker container builds and serves the site.
+- If OpenSky is unreachable, backend returns last cached JSON; frontend shows friendly message.
+
+Implementation details and expectations:
+- Use HttpClientFactory (AddHttpClient) for OpenSkyService; inject IMemoryCache.
+- Use asynchronous programming (async/await) everywhere.
+- Keep controller thin: no heavy processing in request path.
+- For frontend animation: compute `from` and `to` positions and animate marker positions using timestamped interpolation. Keep animations slightly shorter than poll interval for smoothness.
+- For scalability notes: mention switching to Redis for shared cache, rate-limiting logic, and SignalR push instead of polling.
+
+Please implement all source files for a working prototype. After code, provide:
+- Build & run commands (dotnet build/run; docker build/run)
+- How to serve frontend from backend (put index.html into wwwroot) or run frontend separately
+- Example curl: `curl http://localhost:5000/api/flights | jq .states | head`
+- Quick troubleshooting notes (CORS, TLS, map tiles)
+
+Finally, if any piece cannot be fully implemented (e.g., external API keys), explain what to stub and provide a small instruction to switch to real API.
+
+Generate the entire project file contents (C# files, index.html, Dockerfile, README, GitHub Actions) in the response so I can copy them directly.
