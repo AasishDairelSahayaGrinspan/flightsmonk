@@ -61,6 +61,32 @@
   font-family: var(--font-body);
 }
 
+/* Ensure Leaflet controls don't overlap our custom UI */
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 500 !important;
+}
+
+.leaflet-pane {
+  z-index: 400 !important;
+}
+
+.leaflet-tile-pane {
+  z-index: 200 !important;
+}
+
+.leaflet-overlay-pane {
+  z-index: 400 !important;
+}
+
+.leaflet-marker-pane {
+  z-index: 600 !important;
+}
+
+.leaflet-popup-pane {
+  z-index: 700 !important;
+}
+
 .leaflet-popup-content-wrapper {
   background: hsl(222 47% 13%);
   color: hsl(210 40% 98%);
