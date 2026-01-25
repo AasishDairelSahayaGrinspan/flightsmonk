@@ -334,20 +334,32 @@ export function FlightMap({ searchQuery, onSelectFlight, selectedFlightId }: Fli
         ))}
       </MapContainer>
 
-      {/* Map Mode Selector - positioned below the header */}
-      <div className="absolute top-20 right-6 z-[1000] flex flex-col gap-2 pointer-events-auto">
-        {(Object.keys(MAP_MODES) as MapMode[]).map((mode) => (
-          <button
-            key={mode}
-            onClick={() => setMapMode(mode)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider backdrop-blur-md border transition-all shadow-md ${mapMode === mode
-              ? "bg-primary text-white border-primary shadow-lg shadow-primary/20"
-              : "bg-slate-900/90 text-slate-300 border-white/10 hover:border-white/30 hover:text-white hover:bg-slate-800/90"
-              }`}
-          >
-            {mode}
-          </button>
-        ))}
+      {/* Map Mode Selector - Toggle Style */}
+      <div className="absolute top-20 right-4 z-[1000] pointer-events-auto">
+        <div className="bg-slate-900 border-2 border-slate-700 rounded-xl p-1.5 shadow-2xl shadow-black/50">
+          <div className="flex flex-col gap-1.5">
+            {(Object.keys(MAP_MODES) as MapMode[]).map((mode) => {
+              const icons: Record<MapMode, string> = {
+                dark: "🌙",
+                satellite: "🛰️",
+                light: "☀️"
+              };
+              return (
+                <button
+                  key={mode}
+                  onClick={() => setMapMode(mode)}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${mapMode === mode
+                    ? "bg-primary text-white shadow-lg"
+                    : "bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white"
+                    }`}
+                >
+                  <span className="text-sm">{icons[mode]}</span>
+                  <span>{mode}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       {/* Overlay info - Total Flights & Legend */}

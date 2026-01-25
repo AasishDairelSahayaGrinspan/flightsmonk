@@ -87,6 +87,11 @@
   z-index: 700 !important;
 }
 
+/* Theme toggle always on top */
+.leaflet-control-container {
+  z-index: 800 !important;
+}
+
 .leaflet-popup-content-wrapper {
   background: hsl(222 47% 13%);
   color: hsl(210 40% 98%);
