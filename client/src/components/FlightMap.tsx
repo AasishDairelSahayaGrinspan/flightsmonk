@@ -281,8 +281,8 @@ export function FlightMap({ searchQuery, onSelectFlight, selectedFlightId }: Fli
   return (
     <div className="w-full h-full relative bg-slate-900 overflow-hidden">
       <MapContainer
-        center={[20, 0]} // Global center
-        zoom={3}
+        center={[20.5937, 78.9629]} // India center
+        zoom={5}
         style={{ width: "100%", height: "100%", background: "#0f172a" }}
         zoomControl={false}
         minZoom={3}
@@ -291,6 +291,7 @@ export function FlightMap({ searchQuery, onSelectFlight, selectedFlightId }: Fli
         <MapEvents />
 
         <TileLayer
+          key={mapMode}
           attribution={mapMode === 'satellite'
             ? 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EBP, and the GIS User Community'
             : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
@@ -334,14 +335,14 @@ export function FlightMap({ searchQuery, onSelectFlight, selectedFlightId }: Fli
       </MapContainer>
 
       {/* Map Mode Selector - positioned below the header */}
-      <div className="absolute top-20 right-6 z-[350] flex flex-col gap-2">
+      <div className="absolute top-20 right-6 z-[1000] flex flex-col gap-2 pointer-events-auto">
         {(Object.keys(MAP_MODES) as MapMode[]).map((mode) => (
           <button
             key={mode}
             onClick={() => setMapMode(mode)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider backdrop-blur-md border transition-all ${mapMode === mode
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider backdrop-blur-md border transition-all shadow-md ${mapMode === mode
               ? "bg-primary text-white border-primary shadow-lg shadow-primary/20"
-              : "bg-background/60 text-slate-400 border-white/5 hover:border-white/20 hover:text-white"
+              : "bg-slate-900/90 text-slate-300 border-white/10 hover:border-white/30 hover:text-white hover:bg-slate-800/90"
               }`}
           >
             {mode}
@@ -350,7 +351,7 @@ export function FlightMap({ searchQuery, onSelectFlight, selectedFlightId }: Fli
       </div>
 
       {/* Overlay info - Total Flights & Legend */}
-      <div className="absolute bottom-6 left-6 right-6 z-[400] flex items-end justify-between pointer-events-none">
+      <div className="absolute bottom-6 left-6 right-6 z-[1000] flex items-end justify-between pointer-events-none">
         {/* Visible Count */}
         <div className="bg-background/80 backdrop-blur-md border border-white/10 rounded-lg px-4 py-2">
           <div className="flex items-center gap-3">
