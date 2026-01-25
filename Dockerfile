@@ -14,8 +14,12 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Expose port 5000
-EXPOSE 5000
+# Set production environment
+ENV NODE_ENV=production
+ENV PORT=80
+
+# Expose port 80 for Azure
+EXPOSE 80
 
 # Start the application
 CMD ["npm", "start"]
